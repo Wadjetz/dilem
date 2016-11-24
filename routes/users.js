@@ -1,11 +1,12 @@
 var express = require('express');
+var FB = require('fb');
 var router = express.Router();
 
-var fb = require('fb');
+const token = ''
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  
 });
 
 /* GET users listing. */
