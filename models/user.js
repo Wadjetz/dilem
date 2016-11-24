@@ -5,7 +5,7 @@ var userSchema = new Schema({
   id: String,
   name: String,
   picture: String,
-  birthday: String,
+  birthday: Date,
   gender: String,
   hometown: String,
   meeting_for: String,

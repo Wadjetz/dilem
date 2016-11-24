@@ -1,5 +1,6 @@
 "use strict";
 const UserModel = require('../models/user')
+const moment = require('moment');
 const express = require('express');
 const sharp = require('sharp');
 const fs = require('fs');
@@ -33,13 +34,14 @@ var pixeliser = function (dir) {
 };
 
 // temp : download the profile image
-router.get('/download_image', function(req, res, next) {
+router.get('/download_image', (req, res, next) => {
     fb.api('me', { fields: ['id', 'name', 'picture.height(300)', 'birthday', 'gender', 'hometown', 'meeting_for', 'age_range'], width: 100, access_token: token }, function (data) {
         UserModel.findOne({ id: data.id }).then(u => {
             console.log('find ', u, data.id)
             if (!u) {
                 let user = new UserModel(data);
                 user.picture = data.id + '.jpg'
+                user.birthday = moment.utc(data.birthday, 'MM/DD/YYYY').toDate();
                 user.save(result => {
                     console.log(data, result);
                     // Download the facebook profile picture
@@ -54,6 +56,18 @@ router.get('/download_image', function(req, res, next) {
                 res.json(u);
             }
         })
+    });
+});
+
+
+router.get('/users', (req, res, next) => {
+    // TODO add validation
+    let query = {
+        gender: req.query.gender,
+    }
+    console.log('query', query)
+    UserModel.find(query).then(users => {
+        res.json(users)
     });
 });
 
