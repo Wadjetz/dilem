@@ -1,5 +1,5 @@
 "use strict";
-
+const UserModel = require('../models/user')
 const express = require('express');
 const sharp = require('sharp');
 const fs = require('fs');
@@ -34,13 +34,25 @@ var pixeliser = function (dir) {
 
 // temp : download the profile image
 router.get('/download_image', function(req, res, next) {
-    fb.api('me', { fields: ['id', 'name', 'picture.height(300)'], width: 100, access_token: token }, function (data) {
-        console.log(data);
-
-        // Download the facebook profile picture
-        download(data.picture.data.url, path.join(__dirname, "..", data.id + ".jpg"), () => {
-            // Return the URL
-            res.json({ url : req.protocol + '://' + req.get('host') + "/30/" +  data.id + ".jpg"});
+    fb.api('me', { fields: ['id', 'name', 'picture.height(300)', 'birthday', 'gender', 'hometown', 'meeting_for', 'age_range'], width: 100, access_token: token }, function (data) {
+        UserModel.findOne({ id: data.id }).then(u => {
+            console.log('find ', u, data.id)
+            if (!u) {
+                let user = new UserModel(data);
+                user.picture = data.id + '.jpg'
+                user.save(result => {
+                    console.log(data, result);
+                    // Download the facebook profile picture
+                    download(data.picture.data.url, path.join(__dirname, "..", data.id + ".jpg"), () => {
+                        // Return the URL
+                        user.picture = req.protocol + '://' + req.get('host') + "/30/" +  user.id + ".jpg"
+                        res.json(user);
+                    })
+                })
+            } else {
+                u.picture = req.protocol + '://' + req.get('host') + "/30/" +  u.id + ".jpg"
+                res.json(u);
+            }
         })
     });
 });
