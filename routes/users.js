@@ -169,10 +169,10 @@ router.get('/:id', withAuth, (req, res, next) => {
 });
 
 const photoLevels = [
-    { exchanges : 0, blurLevel : 2 },
-    { exchanges : 3, blurLevel : 3 },
-    { exchanges : 6, blurLevel : 4 },
-    { exchanges : 10, blurLevel : 5 },
+    { exchanges : 0, blurLevel : 4 },
+    { exchanges : 3, blurLevel : 6 },
+    { exchanges : 6, blurLevel : 7 },
+    { exchanges : 10, blurLevel : 8 },
     { exchanges : 15, blurLevel : 10 },
     { exchanges : 20, blurLevel : 100 },
 ];
