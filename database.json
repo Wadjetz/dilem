@@ -1,0 +1,57 @@
+[
+  {
+    "picture" : "http://localhost:3000/users/fake1/photo.jpg",
+    "id" : "fake1",
+    "name" : "Girl 1",
+    "birthday" : { "$date" : "1992-01-09T00:00:00Z" },
+    "gender" : "female",
+    "age_range" : {
+      "min" : 21
+    },
+    "__v" : 0
+  },
+  {
+    "picture" : "http://localhost:3000/users/fake2/photo.jpg",
+    "id" : "fake2",
+    "name" : "Girl 2",
+    "birthday" : { "$date" : "1992-01-09T00:00:00Z" },
+    "gender" : "female",
+    "age_range" : {
+      "min" : 21
+    },
+    "__v" : 0
+  },
+  {
+    "picture" : "http://localhost:3000/users/fake3/photo.jpg",
+    "id" : "fake3",
+    "name" : "Girl 3",
+    "birthday" : { "$date" : "1992-01-09T00:00:00Z" },
+    "gender" : "female",
+    "age_range" : {
+      "min" : 21
+    },
+    "__v" : 0
+  },
+  {
+    "picture" : "http://localhost:3000/users/fake4/photo.jpg",
+    "id" : "fake4",
+    "name" : "Boy 1",
+    "birthday" : { "$date" : "1992-01-09T00:00:00Z" },
+    "gender" : "male",
+    "age_range" : {
+      "min" : 21
+    },
+    "__v" : 0
+  },
+  {
+    "picture" : "http://localhost:3000/users/fake5/photo.jpg",
+    "id" : "fake5",
+    "name" : "Boy 2",
+    "birthday" : { "$date" : "1992-01-09T00:00:00Z" },
+    "gender" : "male",
+    "age_range" : {
+      "min" : 21
+    },
+    "__v" : 0
+  }
+]

@@ -14,7 +14,7 @@ const fb = require('fb');
 const request = require('request');
 
 const secret = 'lolsdnqndqndqsndqsndqsnd';
-const photoFolder = __dirname + "/../";
+const photoFolder = __dirname + "/../images/";
 
 // Download helper
 var download = function(uri, filename, callback){
