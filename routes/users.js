@@ -184,15 +184,15 @@ router.get('/:id/photo.jpg', withAuth, function(req, res, next) {
 
     MessageModel.find(request).select('-__v -_id').sort({ date: -1 }).then(messages => {
         // Get the total number of exchanges
-        let exchanges = messages.reduce((message, acc) => {
+        let exchanges = messages.reduce((acc, message) => {
             if(message.from != acc.last)
-                return { counter : acc.counter + 1, last : acc.last };
+                return { counter : acc.counter + 1, last : message.from };
             else
                 return { counter : acc.counter, last : acc.last }
         }, { counter : 0, last : req.session.id });
-
         // Find the photo level corresponding to the number of exchanges
         let photoLevel = photoLevels.find(level => level.exchanges >= exchanges.counter);
+        console.log(photoLevel, exchanges, messages)
 
         // Return the blurred picture
         pixelizer(path.join(photoFolder, req.params.id + '.jpg'), photoLevel.blurLevel, outputFile => {
