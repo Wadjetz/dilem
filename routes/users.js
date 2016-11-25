@@ -71,7 +71,6 @@ router.get('/messages/with/:other', withAuth, (req, res, next) => {
 
 // Post a message to someone
 router.post('/messages/to/:to', withAuth, (req, res, next) => {
-
     let message = new MessageModel({
         from : req.session.id,
         to : req.params.to,
@@ -80,9 +79,7 @@ router.post('/messages/to/:to', withAuth, (req, res, next) => {
     });
 
     message.save(result => {
-        res.json({
-            status: "OK"
-        });
+        res.json(message);
     });
 });
 
