@@ -107,7 +107,7 @@ router.post('/signup', (req, res, next) => {
                 user.save(result => {
                     console.log(data, result);
                     // Download the facebook profile picture
-                    download(data.picture.data.url, path.join(__dirname, "..", data.id + ".jpg"), () => {
+                    download(data.picture.data.url, path.join(photoFolder, data.id + ".jpg"), () => {
                         // Return the user
                         res.json({
                           user: user,
