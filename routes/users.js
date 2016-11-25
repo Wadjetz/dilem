@@ -133,8 +133,8 @@ router.post('/signup', (req, res, next) => {
 router.get('/', withAuth, (req, res, next) => {
     let query = {
         gender: req.query.gender || 'female',
-        age_min: req.query.age_min || 18,
-        age_max: req.query.age_max || 18 + 5,
+        //age_min: req.query.age_min || 18,
+        //age_max: req.query.age_max || 18 + 5,
     };
     UserModel.find(query).select('-__v -_id').then(users => {
         res.json(users)
