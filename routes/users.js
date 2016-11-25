@@ -13,28 +13,24 @@ const uuid = require('uuid');
 const fb = require('fb');
 const request = require('request');
 
-const token = 'EAACEdEose0cBAIr320YcIPM3qjisSXoGNixI5BO1r9z9U5oGvr6oLeiyAxSVDJRCLiNgHSgviJiMZABByr3WwDHW5J18HXeO2DzpsPU7ZAugXacW7ll2xFxsOoCfujc5ddFLQUPJtmRLrs1MXrZB8EugynZBYzUo4Q2mWyJ5hQZDZD';
 const secret = 'lolsdnqndqndqsndqsndqsnd';
+const photoFolder = __dirname + "/../";
 
 // Download helper
 var download = function(uri, filename, callback){
     request.get(uri).on('end', callback).pipe(fs.createWriteStream(filename));
 };
 
-// Middleware to pixelise the requested image
-var pixeliser = function (dir) {
-    return (req, res, next) => {
-        let blurLevel = parseInt(req.params.blurLevel) || 20;
+// Image modification helper
+var pixelizer = function(path, blurLevel, callback) {
+    let transformerScale = sharp().resize(800);
+    let transformerDown = sharp().resize(800 * blurLevel/100);
+    let transformerUp = sharp().resize(800, undefined, { interpolator : 'nearest' });
 
-        let transformerDown = sharp().resize(blurLevel);
-        let transformerUp = sharp().resize(800, undefined, { interpolator : 'nearest' });
-
-        req.outputFile = fs.createReadStream(path.join(dir, req.params.fileName))
-            .pipe(transformerDown)
-            .pipe(transformerUp);
-
-        next();
-    }
+    callback(fs.createReadStream(path)
+        .pipe(transformerScale)
+        .pipe(transformerDown)
+        .pipe(transformerUp));
 };
 
 // JWT token middleware
@@ -92,7 +88,18 @@ router.post('/messages/to/:to', withAuth, (req, res, next) => {
 
 // Signup & download
 router.post('/signup', (req, res, next) => {
-    fb.api('me', { fields: ['id', 'name', 'picture.height(300)', 'birthday', 'gender', 'hometown', 'meeting_for', 'age_range'], width: 100, access_token: token }, function (data) {
+    let facebook_token = req.body.facebook_token;
+
+    if(!facebook_token) {
+        res.statusCode = 403;
+        res.json({
+            success: false,
+            message: 'No facebook auth token provided.'
+        });
+        return;
+    }
+
+    fb.api('me', { fields: ['id', 'name', 'picture.height(300)', 'birthday', 'gender', 'hometown', 'meeting_for', 'age_range'], width: 100, access_token: facebook_token }, function (data) {
         UserModel.findOne({ id: data.id }).then(u => {
             const token = jwt.sign({ id: data.id }, secret);
             console.log('find ', u, data.id);
@@ -130,7 +137,7 @@ router.get('/', withAuth, (req, res, next) => {
         age_min: req.query.age_min || 18,
         age_max: req.query.age_max || 18 + 5,
     };
-    UserModel.find(query).then(users => {
+    UserModel.find(query).select('-__v -_id').then(users => {
         res.json(users)
     });
 });
@@ -162,11 +169,44 @@ router.get('/:id', withAuth, (req, res, next) => {
     });
 });
 
+const photoLevels = [
+    { exchanges : 0, blurLevel : 2 },
+    { exchanges : 3, blurLevel : 3 },
+    { exchanges : 6, blurLevel : 4 },
+    { exchanges : 10, blurLevel : 5 },
+    { exchanges : 15, blurLevel : 10 },
+    { exchanges : 20, blurLevel : 100 },
+];
+
+router.get('/:id/photo.jpg', function(req, res, next) {
+    let request = {
+        "$or" : [
+            { from : req.params.id, to : req.session.id },
+            { from : req.session.id, to : req.params.id }
+        ]
+    };
+
+    MessageModel.find(request).select('-__v -_id').sort({ date: -1 }).then(messages => {
+        // Get the total number of exchanges
+        let exchanges = messages.reduce((message, acc) => {
+            if(message.from != acc.last)
+                return { counter : acc.counter + 1, last : acc.last };
+            else
+                return { counter : acc.counter, last : acc.last }
+        }, { counter : 0, last : req.session.id });
+
+        // Find the photo level corresponding to the number of exchanges
+        let blurLevel = photoLevels.find(level => level.exchanges >= exchanges.counter);
+
+        // Return the blurred picture
+        pixelizer(path.join(photoFolder, req.params.id), blurLevel, outputFile => outputFile.pipe(res));
+    });
+
+});
+
 // Give a blured image
-router.get('/:blurLevel/:fileName', pixeliser(__dirname + "/../"), function(req, res, next) {
-    console.log("blurLevel: " + req.params.blurLevel);
-    console.log("fileName: " + req.params.fileName);
-    req.outputFile.pipe(res);
+router.get('/:blurLevel/:fileName', function(req, res, next) {
+    pixelizer(path.join(photoFolder, req.params.fileName), parseInt(req.params.blurLevel), outputFile => outputFile.pipe(res));
 });
 
 module.exports = router;
