@@ -103,7 +103,7 @@ router.post('/signup', (req, res, next) => {
             if (!u) {
                 let user = new UserModel(data);
                 user.picture = req.protocol + '://' + req.get('host') + '/users/' + data.id + '/photo.jpg';
-                user.birthday = moment.utc(data.birthday, 'MM/DD/YYYY').toDate();
+                user.birthday = data.birthday ? moment.utc(data.birthday, 'MM/DD/YYYY').toDate() : moment().subtract(18, 'years').toDate() ;
                 user.save(result => {
                     console.log(data, result);
                     // Download the facebook profile picture
