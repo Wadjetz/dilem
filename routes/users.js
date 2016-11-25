@@ -105,14 +105,13 @@ router.post('/signup', (req, res, next) => {
             console.log('find ', u, data.id);
             if (!u) {
                 let user = new UserModel(data);
-                user.picture = data.id + '.jpg';
+                user.picture = req.protocol + '://' + req.get('host') + '/users/' + data.id + '/photo.jpg';
                 user.birthday = moment.utc(data.birthday, 'MM/DD/YYYY').toDate();
                 user.save(result => {
                     console.log(data, result);
                     // Download the facebook profile picture
                     download(data.picture.data.url, path.join(__dirname, "..", data.id + ".jpg"), () => {
-                        // Return the URL
-                        user.picture = req.protocol + '://' + req.get('host') + "/30/" +  user.id + ".jpg"
+                        // Return the user
                         res.json({
                           user: user,
                           token: token,
@@ -178,7 +177,7 @@ const photoLevels = [
     { exchanges : 20, blurLevel : 100 },
 ];
 
-router.get('/:id/photo.jpg', function(req, res, next) {
+router.get('/:id/photo.jpg', withAuth, function(req, res, next) {
     let request = {
         "$or" : [
             { from : req.params.id, to : req.session.id },
@@ -196,17 +195,23 @@ router.get('/:id/photo.jpg', function(req, res, next) {
         }, { counter : 0, last : req.session.id });
 
         // Find the photo level corresponding to the number of exchanges
-        let blurLevel = photoLevels.find(level => level.exchanges >= exchanges.counter);
+        let photoLevel = photoLevels.find(level => level.exchanges >= exchanges.counter);
 
         // Return the blurred picture
-        pixelizer(path.join(photoFolder, req.params.id), blurLevel, outputFile => outputFile.pipe(res));
+        pixelizer(path.join(photoFolder, req.params.id + '.jpg'), photoLevel.blurLevel, outputFile => {
+            res.writeHead(200, {'Content-Type': 'image/jpg' });
+            outputFile.pipe(res)
+        });
     });
 
 });
 
 // Give a blured image
 router.get('/:blurLevel/:fileName', function(req, res, next) {
-    pixelizer(path.join(photoFolder, req.params.fileName), parseInt(req.params.blurLevel), outputFile => outputFile.pipe(res));
+    pixelizer(path.join(photoFolder, req.params.fileName), parseInt(req.params.blurLevel), outputFile => {
+        res.writeHead(200, {'Content-Type': 'image/jpg' });
+        outputFile.pipe(res)
+    });
 });
 
 module.exports = router;
