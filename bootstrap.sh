@@ -1,2 +1,4 @@
-mongoimport --db dilem --collection users --jsonArray --file database.json
+mongoimport --db dilem --collection users --jsonArray --file databaseUsers.json
+mongoimport --db dilem --collection messages --jsonArray --file databaseMessages.json
+
 

@@ -1,0 +1,51 @@
+[
+  {
+    "from" : "10209783094487863",
+    "to" : "fake1",
+    "date" : { "$date" : "2016-11-25T17:00:00Z" },
+    "message" : "Hey bébé, want sum fuk",
+    "__v" : 0
+  },
+  {
+    "from" : "fake1",
+    "to" : "10209783094487863",
+    "date" : { "$date" : "2016-11-25T17:02:00Z" },
+    "message" : "Qui etes vous",
+    "__v" : 0
+  },
+  {
+    "from" : "10209783094487863",
+    "to" : "fake1",
+    "date" : { "$date" : "2016-11-25T17:04:00Z" },
+    "message" : "C'est marqué dessus comme le port salut",
+    "__v" : 0
+  },
+  {
+    "from" : "fake1",
+    "to" : "10209783094487863",
+    "date" : { "$date" : "2016-11-25T17:06:00Z" },
+    "message" : "Je vais vous signaler...",
+    "__v" : 0
+  },
+  {
+    "from" : "10209783094487863",
+    "to" : "fake1",
+    "date" : { "$date" : "2016-11-25T17:08:00Z" },
+    "message" : "Non plz",
+    "__v" : 0
+  },
+  {
+    "from" : "10209783094487863",
+    "to" : "fake1",
+    "date" : { "$date" : "2016-11-25T17:10:00Z" },
+    "message" : "Please respond",
+    "__v" : 0
+  },
+  {
+    "from" : "10209783094487863",
+    "to" : "fake2",
+    "date" : { "$date" : "2016-11-25T17:00:00Z" },
+    "message" : "Wesh répond",
+    "__v" : 0
+  }
+]
